@@ -10,7 +10,7 @@ function NotFoundPage() {
                     The link you followed to get here must be broken...
                 </p>
                 <Link to="/">
-                    <button className="mt-6 rounded-full border-2 border-zinc-900 bg-zinc-900 px-6 py-2 text-sm font-semibold text-white transition hover:bg-white hover:text-zinc-900">
+                    <button className="mt-6 rounded-full border-2 border-zinc-900 bg-zinc-900 px-6 py-2 text-sm font-semibold text-white transition hover:bg-white hover:text-zinc-900" variant='primary'>
                         Go Back Home
                     </button>
                 </Link>
