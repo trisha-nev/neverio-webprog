@@ -6,56 +6,61 @@ const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
-// const articleRoutes = require("./routes/articleRoutes");
-
+const articleRoutes = require("./routes/articleRoutes");
 const app = express();
 
-// Database Connection
-connectDB();
-
+// Global Middleware
 app.use(express.json());
-
-// Middleware
 app.use(jsonParser);
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
 
-// Vercel options
+// Optimized CORS configuration (Handles all preflight automatically)
 const corsOptions = {
-  origin: "*", // Allow all origins
-  credentials: true, // Allow credentials
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
-  preflightContinue: false,
-  optionsSuccessStatus: 204, // For legacy browser support
+  origin: "*", 
+  credentials: true, 
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Origin", "Accept"],
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+  optionsSuccessStatus: 204, 
 };
 
-app.options("", cors(corsOptions)); // Pre-flight request for all routes
 app.use(cors(corsOptions));
 
-// Curb Cors Error by adding a header here
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-  );
-  next();
+// 🛠️ FIX: Serverless Connection Middleware
+// This forces Express to wait for connectDB() to completely resolve 
+// before letting incoming requests hit your route handlers.
+const ensureDbConnected = async (req, res, next) => {
+  try {
+    await connectDB(); // Reuses cached connection or resolves the active promise
+    next();
+  } catch (err) {
+    console.error("❌ Database connection middleware error:", err.message);
+    res.status(500).json({ 
+      message: "Database connection failed", 
+      error: err.message 
+    });
+  }
+};
+
+// Root benchmark endpoint (Great for testing if Vercel is live)
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "healthy", message: "Server is running perfectly on Vercel!" });
 });
 
-// Routes
-app.use("/api/users", userRoutes);
-// app.use("/api/articles", articleRoutes);
+// Applied the connection middleware specifically to your database-driven routes
+app.use("/api/users", ensureDbConnected, userRoutes);
+app.use("/api/articles", ensureDbConnected, articleRoutes);
 
-// Error Handling
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: "Server Error" });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// ONLY call app.listen if we are NOT running in a Vercel serverless environment
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 8000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+// ⚠️ CRITICAL FOR VERCEL: Export the app instance
+module.exports = app;

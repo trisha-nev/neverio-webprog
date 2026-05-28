@@ -23,6 +23,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import Button from "@mui/material/Button";
+import ArticleIcon from "@mui/icons-material/Article";
 
 const drawerWidth = 248;
 const dashboardNavItems = [
@@ -31,6 +32,12 @@ const dashboardNavItems = [
     title: "Dashboard",
     to: "/dashboard",
     icon: DashboardIcon,
+  },
+  {
+    label: "Articles",
+    title: "Articles",
+    to: "/dashboard/articles",
+    icon: ArticleIcon,
   },
   {
     label: "Reports",
@@ -43,6 +50,7 @@ const dashboardNavItems = [
     title: "Users",
     to: "/dashboard/users",
     icon: PeopleIcon,
+    isAdminOnly: true,
   },
 ];
 
@@ -163,8 +171,12 @@ const DashLayout = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const pageTitle = getPageTitle(location.pathname);
   const navigate = useNavigate();
+
+  // Retrieve user data from localStorage
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  const pageTitle = getPageTitle(location.pathname);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -175,7 +187,8 @@ const DashLayout = () => {
   };
 
   const handleLogout = () => {
-    navigate("/");
+    localStorage.removeItem("user");
+    navigate("/auth/signin");
   };
 
   return (
@@ -276,47 +289,49 @@ const DashLayout = () => {
           <Divider />
 
           <List>
-            {dashboardNavItems.map(({ label, to, icon: Icon }) => (
-              <ListItem key={to} disablePadding sx={{ display: "block" }}>
-                <ListItemButton
-                  component={Link}
-                  to={to}
-                  selected={location.pathname === to}
-                  sx={{
-                    minHeight: 48,
-                    px: 2.5,
-                    justifyContent: open ? "initial" : "center",
-                    '&.Mui-selected': {
-                      backgroundColor: alpha("#FCF886", 0.3),
-                      '&:hover': {
-                        backgroundColor: alpha("#FCF886", 0.4),
-                      }
-                    }
-                  }}
-                >
-                  <ListItemIcon
+            {dashboardNavItems
+              .filter(item => !item.isAdminOnly || user?.role === "admin")
+              .map(({ label, to, icon: Icon }) => (
+                <ListItem key={to} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+                    component={Link}
+                    to={to}
+                    selected={location.pathname === to}
                     sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                      color: location.pathname === to ? "#384355" : "inherit",
+                      minHeight: 48,
+                      px: 2.5,
+                      justifyContent: open ? "initial" : "center",
+                      '&.Mui-selected': {
+                        backgroundColor: alpha("#FCF886", 0.3),
+                        '&:hover': {
+                          backgroundColor: alpha("#FCF886", 0.4),
+                        }
+                      }
                     }}
                   >
-                    <Icon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={label}
-                    sx={{ 
-                      opacity: open ? 1 : 0,
-                      '& .MuiListItemText-primary': {
-                        fontWeight: location.pathname === to ? 600 : 400,
-                        fontFamily: "'Poppins', sans-serif",
-                      }
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))}
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                        color: location.pathname === to ? "#384355" : "inherit",
+                      }}
+                    >
+                      <Icon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={label}
+                      sx={{ 
+                        opacity: open ? 1 : 0,
+                        '& .MuiListItemText-primary': {
+                          fontWeight: location.pathname === to ? 600 : 400,
+                          fontFamily: "'Poppins', sans-serif",
+                        }
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
           </List>
         </Drawer>
         

@@ -6,7 +6,48 @@ const inputClasses =
 
 const actionButtonClassName = 'w-full rounded-xl py-3 text-[11px] tracking-[0.2em]';
 
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/userService';
+
 const SignInPage = () => {
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await loginUser(formData);
+      const { token, firstName, role } = response.data;
+
+      // Block viewers from entering the workspace
+      if (role === 'viewer') {
+        setError('Viewers are not permitted to access the dashboard.');
+        setIsLoading(false);
+        return;
+      }
+
+      const userData = { firstName, role, token };
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      navigate('/dashboard', { state: userData });
+    } catch (err) {
+      const message = err.response?.data?.message || 'An error occurred during login. Please try again.';
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">Log In</h1>
@@ -14,29 +55,45 @@ const SignInPage = () => {
         Access your account using the same monochrome wireframe language used across the site.
       </p>
 
-      <form className="mt-8 space-y-5">
+      {error && (
+        <div className="mt-4 rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      <form className="mt-8 space-y-5" onSubmit={handleLogin}>
         <div>
-          <label htmlFor="signin-email" className="text-sm font-medium text-zinc-700">
+          <label htmlFor="email" className="text-sm font-medium text-zinc-700">
             Email Address
           </label>
           <input
-            id="signin-email"
+            id="email"
+            name="email"
             type="email"
-            placeholder="Placeholder"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="name@example.com"
             autoComplete="email"
+            required
+            disabled={isLoading}
             className={inputClasses}
           />
         </div>
 
         <div>
-          <label htmlFor="signin-password" className="text-sm font-medium text-zinc-700">
+          <label htmlFor="password" className="text-sm font-medium text-zinc-700">
             Password
           </label>
           <input
-            id="signin-password"
+            id="password"
+            name="password"
             type="password"
-            placeholder="Placeholder"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="••••••••"
             autoComplete="current-password"
+            required
+            disabled={isLoading}
             className={inputClasses}
           />
           <p className="mt-2 text-xs leading-5 text-zinc-500">
@@ -54,15 +111,15 @@ const SignInPage = () => {
           </button>
         </div>
 
-        <Button type="submit" variant="primary" className={actionButtonClassName}>
-          Log In
+        <Button type="submit" variant="primary" className={actionButtonClassName} disabled={isLoading}>
+          {isLoading ? 'Logging In...' : 'Log In'}
         </Button>
 
         <div className="grid gap-3 pt-2 sm:grid-cols-2">
-          <Button type="button" variant="secondary" className={actionButtonClassName}>
+          <Button type="button" variant="secondary" className={actionButtonClassName} disabled={isLoading}>
             Log In with Google
           </Button>
-          <Button type="button" variant="secondary" className={actionButtonClassName}>
+          <Button type="button" variant="secondary" className={actionButtonClassName} disabled={isLoading}>
             Log In with Apple
           </Button>
         </div>

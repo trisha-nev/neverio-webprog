@@ -6,9 +6,10 @@ const ArticleList = ({ articles }) => {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {articles.map((article, index) => (
                 <article key={article.name} className="rounded-3xl border-2 border-[#384355] bg-[#FCF886] p-4">
-                    <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-[#FDFDFD]">
+                    <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] overflow-hidden bg-[#FDFDFD]">
                         <img 
-                            src={article.image}
+                            src={article.imageUrl || article.image || "/logo.png"}
+                            alt={article.title}
                             className="h-full w-full object-cover"
                         />
                     </div>

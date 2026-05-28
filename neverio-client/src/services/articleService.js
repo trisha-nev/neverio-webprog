@@ -1,9 +1,8 @@
 import axios from 'axios';
 import constants from '../../constants';
 
-// API Access to Front-end JSON data transformation or decoder
 const API = axios.create({
-  baseURL: `${constants.HOST}/users`,
+  baseURL: `${constants.HOST}/articles`,
 });
 
 // Automatically inject JWT Bearer Token into authorization headers
@@ -19,17 +18,12 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Fetch users
-export const fetchUsers = (user) => API.get('/', user);
+// Fetch articles
+export const getArticles = () => API.get('/');
+export const fetchArticles = getArticles;
+export const fetchArticleById = (id) => API.get(`/${id}`);
 
-// Create user
-export const createUser = (user) => API.post('/', user);
-
-// Update user
-export const updateUser = (id, user) => API.put(`/${id}`, user);
-
-// Delete user
-export const deleteUser = (id) => API.delete(`/${id}`);
-
-// Login user
-export const loginUser = (credentials) => API.post('/login', credentials);
+// Create, Update, Delete articles
+export const createArticle = (articleData) => API.post('/', articleData);
+export const updateArticle = (id, articleData) => API.put(`/${id}`, articleData);
+export const deleteArticle = (id) => API.delete(`/${id}`);

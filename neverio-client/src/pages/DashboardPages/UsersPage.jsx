@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Alert,
   Box,
@@ -29,7 +29,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { DataGrid } from '@mui/x-data-grid';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
-import usersSeed from '../../data/users.json?raw';
+import { fetchUsers, createUser, updateUser, deleteUser } from '../../services/userService';
 
 const roles = ['admin', 'editor', 'viewer'];
 const genders = ['male', 'female', 'other'];
@@ -82,12 +82,11 @@ const loadUsers = () => {
   }
 };
 
-const seed = loadUsers();
-
 const UsersPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [users, setUsers] = useState(seed.users);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState({ open: false, id: null });
   const [form, setForm] = useState(blankForm);
   const [errors, setErrors] = useState({});
@@ -99,6 +98,28 @@ const UsersPage = () => {
   const [genderFilter, setGenderFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  const loadUsersData = async () => {
+    try {
+      setLoading(true);
+      const { data } = await fetchUsers();
+      // Map API data (type) to frontend fields (role, id)
+      const mappedUsers = (data.users || []).map(u => ({
+        ...u,
+        id: u._id,
+        role: u.type || u.role || 'admin'
+      }));
+      setUsers(mappedUsers);
+    } catch (error) {
+      console.error('Error loading users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUsersData();
+  }, []);
+
   const resetForm = () => {
     setForm({ ...blankForm });
     setErrors({});
@@ -106,7 +127,7 @@ const UsersPage = () => {
 
   const openModal = (user) => {
     setModal({ open: true, id: user?.id ?? null });
-    setForm(user ? { ...blankForm, ...user } : { ...blankForm });
+    setForm(user ? { ...blankForm, ...user, password: '' } : { ...blankForm });
     setErrors({});
   };
 
@@ -132,7 +153,7 @@ const UsersPage = () => {
     const email = form.email.trim().toLowerCase();
     const username = form.username.trim().toLowerCase();
     const contactNumber = form.contactNumber.trim();
-    const age = form.age.trim();
+    const age = String(form.age).trim();
     const password = form.password;
 
     // Required fields validation
@@ -145,13 +166,17 @@ const UsersPage = () => {
       ['email', 'Email'],
       ['role', 'Role'],
       ['username', 'Username'],
-      ['password', 'Password'],
       ['address', 'Address'],
     ].forEach(([key, label]) => {
       if (!String(form[key]).trim()) {
         nextErrors[key] = `${label} is required.`;
       }
     });
+
+    // Password required on creation, optional on edit
+    if (!modal.id && !password) {
+      nextErrors.password = 'Password is required.';
+    }
 
     // Email validation
     if (!nextErrors.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -172,8 +197,8 @@ const UsersPage = () => {
       }
     }
 
-    // Password validation
-    if (!nextErrors.password && password.length < 8) {
+    // Password validation (if supplied)
+    if (password && password.length < 8) {
       nextErrors.password = 'Password must be at least 8 characters long.';
     }
 
@@ -200,7 +225,7 @@ const UsersPage = () => {
     return nextErrors;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const nextErrors = validate();
 
@@ -209,41 +234,62 @@ const UsersPage = () => {
       return;
     }
 
-    const newUser = {
+    const newUserPayload = {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
-      age: form.age.trim(),
+      age: form.age,
       gender: form.gender.trim().toLowerCase(),
       contactNumber: form.contactNumber.trim(),
       email: form.email.trim().toLowerCase(),
-      role: form.role.trim().toLowerCase(),
+      role: form.role.trim().toLowerCase(), // map 'role' to 'type'
       username: form.username.trim().toLowerCase(),
-      password: form.password,
       address: form.address.trim(),
       isActive: form.isActive,
     };
 
-    setUsers((prev) =>
-      modal.id
-        ? prev.map((user) => (user.id === modal.id ? { ...user, ...newUser } : user))
-        : [
-            ...prev,
-            {
-              id: prev.reduce((max, user) => Math.max(max, Number(user.id) || 0), 0) + 1,
-              ...newUser,
-            },
-          ]
-    );
-
-    closeModal();
+    try {
+      if (modal.id) {
+        // Edit User
+        if (form.password) {
+          newUserPayload.password = form.password;
+        }
+        await updateUser(modal.id, newUserPayload);
+      } else {
+        // Add User
+        newUserPayload.password = form.password;
+        await createUser(newUserPayload);
+      }
+      await loadUsersData();
+      closeModal();
+    } catch (err) {
+      console.error('Error saving user:', err);
+      const serverMsg = err.response?.data?.message || 'Failed to save user. Verify details are unique.';
+      alert(serverMsg);
+    }
   };
 
-  const toggleStatus = (id) => {
-    setUsers((prev) =>
-      prev.map((user) =>
-        user.id === id ? { ...user, isActive: !user.isActive } : user
-      )
-    );
+  const toggleStatus = async (id) => {
+    const userToToggle = users.find(u => u.id === id);
+    if (!userToToggle) return;
+    try {
+      await updateUser(id, { isActive: !userToToggle.isActive });
+      await loadUsersData();
+    } catch (err) {
+      console.error('Error toggling status:', err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!modal.id) return;
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      try {
+        await deleteUser(modal.id);
+        await loadUsersData();
+        closeModal();
+      } catch (err) {
+        console.error('Error deleting user:', err);
+      }
+    }
   };
 
   // Filter users based on search and filters
@@ -481,12 +527,7 @@ const UsersPage = () => {
         </Stack>
       </Paper>
 
-      {/* Error Alert */}
-      {seed.error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {seed.error}
-        </Alert>
-      )}
+
 
       {/* Users Table Section */}
       <Paper elevation={3} sx={{ p: { xs: 1.5, sm: 2 }, minWidth: 0, overflow: 'hidden' }}>
@@ -609,6 +650,11 @@ const UsersPage = () => {
             </Stack>
           </DialogContent>
           <DialogActions sx={{ px: 3, py: 2 }}>
+            {modal.id && (
+              <Button color="error" onClick={handleDelete} sx={{ mr: 'auto' }}>
+                Delete User
+              </Button>
+            )}
             <Button onClick={closeModal}>Cancel</Button>
             <Button type="submit" variant="contained">
               {modal.id ? 'Update User' : 'Save User'}
