@@ -1,1 +1,62 @@
 @import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: #fDFDFD;
+    color: #384355;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+/* Custom Neo-Brutalist shadows and utilities */
+.shadow-brutal {
+  box-shadow: 4px 4px 0px 0px #384355;
+}
+
+.shadow-brutal-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shadow-brutal-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 7px 7px 0px 0px #384355;
+}
+
+.shadow-brutal-active:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px 0px #384355;
+}
+
+.shadow-brutal-sm {
+  box-shadow: 2px 2px 0px 0px #384355;
+}
+
+.shadow-brutal-lg {
+  box-shadow: 6px 6px 0px 0px #384355;
+}
+
+.shadow-brutal-xl {
+  box-shadow: 10px 10px 0px 0px #384355;
+}
+
+.border-brand {
+  border: 2.5px solid #384355;
+}
+
+.border-brand-sm {
+  border: 1.5px solid #384355;
+}
+
+.focus-ring-brand:focus-visible {
+  outline: 3px solid #FCF886;
+  outline-offset: 2px;
+}

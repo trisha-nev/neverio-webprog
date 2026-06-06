@@ -335,12 +335,12 @@ const UsersPage = () => {
     ...extra,
   });
 
-  const columns = [
+    const columns = [
     { field: 'id', headerName: 'ID', width: 80 },
     {
       field: 'fullName',
       headerName: 'Full Name',
-      flex: 1,
+      flex: 1.2,
       minWidth: 170,
       valueGetter: (_, row) => `${row.firstName} ${row.lastName}`.trim(),
     },
@@ -353,7 +353,7 @@ const UsersPage = () => {
       valueGetter: (_, row) => labelize(row.gender),
     },
     { field: 'contactNumber', headerName: 'Contact Number', minWidth: 160 },
-    { field: 'email', headerName: 'Email', flex: 1.2, minWidth: 220 },
+    { field: 'email', headerName: 'Email', flex: 1.5, minWidth: 220 },
     {
       field: 'role',
       headerName: 'Role',
@@ -369,8 +369,12 @@ const UsersPage = () => {
         <Chip
           size="small"
           label={row.isActive ? 'Active' : 'Inactive'}
-          color={row.isActive ? 'success' : 'default'}
-          variant={row.isActive ? 'filled' : 'outlined'}
+          sx={{
+            fontWeight: 700,
+            border: '2px solid #384355',
+            backgroundColor: row.isActive ? '#7FCC7E' : '#E8E8E2',
+            color: '#384355',
+          }}
         />
       ),
     },
@@ -381,8 +385,22 @@ const UsersPage = () => {
       sortable: false,
       filterable: false,
       renderCell: ({ row }) => (
-        <Stack direction="row" spacing={1} sx={{ py: 0.5 }}>
-          <Button size="small" variant="outlined" onClick={() => openModal(row)}>
+        <Stack direction="row" spacing={1.5} sx={{ py: 0.5 }}>
+          <Button 
+            size="small" 
+            variant="outlined" 
+            onClick={() => openModal(row)}
+            sx={{
+              border: '2px solid #384355',
+              fontWeight: 700,
+              fontSize: '10px',
+              borderRadius: '9999px',
+              px: 2,
+              '&:hover': {
+                bgcolor: '#E8E8E2',
+              }
+            }}
+          >
             Edit
           </Button>
           <Button
@@ -390,6 +408,19 @@ const UsersPage = () => {
             variant="contained"
             color={row.isActive ? 'warning' : 'success'}
             onClick={() => toggleStatus(row.id)}
+            sx={{
+              border: '2px solid #384355',
+              fontWeight: 700,
+              fontSize: '10px',
+              borderRadius: '9999px',
+              px: 2,
+              boxShadow: '1px 1px 0px 0px #384355',
+              color: '#384355',
+              '&:hover': {
+                bgcolor: row.isActive ? '#FCF886' : '#7FCC7E',
+                boxShadow: '2px 2px 0px 0px #384355',
+              }
+            }}
           >
             {row.isActive ? 'Disable' : 'Activate'}
           </Button>
@@ -401,10 +432,10 @@ const UsersPage = () => {
   return (
     <Box sx={{ width: '100%', minWidth: 0 }}>
       {/* Header Section */}
-      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Stack spacing={2}>
+      <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: '#fDFDFD' }}>
+        <Stack spacing={2.5}>
           <Box>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: 800, fontFamily: "'Outfit', sans-serif", color: '#384355' }}>
               Users
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -426,13 +457,13 @@ const UsersPage = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
+                    <SearchIcon fontSize="small" sx={{ color: '#384355' }} />
                   </InputAdornment>
                 ),
                 endAdornment: searchTerm && (
                   <InputAdornment position="end">
                     <IconButton size="small" onClick={() => setSearchTerm('')}>
-                      <ClearIcon fontSize="small" />
+                      <ClearIcon fontSize="small" sx={{ color: '#384355' }} />
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -441,11 +472,14 @@ const UsersPage = () => {
             
             {/* Role Filter */}
             <FormControl size="small" sx={{ flex: 1 }}>
-              <InputLabel>Role</InputLabel>
+              <InputLabel sx={{ color: '#384355', fontWeight: 500 }}>Role</InputLabel>
               <Select
                 value={roleFilter}
                 label="Role"
                 onChange={(e) => setRoleFilter(e.target.value)}
+                sx={{
+                  '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                }}
               >
                 <MenuItem value="all">All Roles</MenuItem>
                 <MenuItem value="admin">Admin</MenuItem>
@@ -456,11 +490,14 @@ const UsersPage = () => {
             
             {/* Gender Filter */}
             <FormControl size="small" sx={{ flex: 1 }}>
-              <InputLabel>Gender</InputLabel>
+              <InputLabel sx={{ color: '#384355', fontWeight: 500 }}>Gender</InputLabel>
               <Select
                 value={genderFilter}
                 label="Gender"
                 onChange={(e) => setGenderFilter(e.target.value)}
+                sx={{
+                  '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                }}
               >
                 <MenuItem value="all">All Genders</MenuItem>
                 <MenuItem value="male">Male</MenuItem>
@@ -471,11 +508,14 @@ const UsersPage = () => {
             
             {/* Status Filter */}
             <FormControl size="small" sx={{ flex: 1 }}>
-              <InputLabel>Status</InputLabel>
+              <InputLabel sx={{ color: '#384355', fontWeight: 500 }}>Status</InputLabel>
               <Select
                 value={statusFilter}
                 label="Status"
                 onChange={(e) => setStatusFilter(e.target.value)}
+                sx={{
+                  '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                }}
               >
                 <MenuItem value="all">All Status</MenuItem>
                 <MenuItem value="active">Active</MenuItem>
@@ -488,7 +528,18 @@ const UsersPage = () => {
               variant="outlined"
               onClick={clearFilters}
               size="medium"
-              sx={{ flex: 0.5, minWidth: '100px' }}
+              sx={{
+                flex: 0.5,
+                minWidth: '100px',
+                border: '2px solid #384355',
+                color: '#384355',
+                fontWeight: 700,
+                boxShadow: '2px 2px 0px 0px #384355',
+                '&:hover': {
+                  transform: 'translate(-1px, -1px)',
+                  boxShadow: '3px 3px 0px 0px #384355',
+                }
+              }}
             >
               Clear
             </Button>
@@ -496,9 +547,22 @@ const UsersPage = () => {
             {/* Add User Button */}
             <Button
               variant="contained"
+              color="secondary"
               onClick={() => openModal()}
               size="medium"
-              sx={{ flex: 0.5, minWidth: '140px' }}
+              sx={{
+                flex: 0.5,
+                minWidth: '140px',
+                border: '2px solid #384355',
+                boxShadow: '2px 2px 0px 0px #384355',
+                fontWeight: 700,
+                color: '#384355',
+                '&:hover': {
+                  bgcolor: '#FCF886',
+                  transform: 'translate(-1px, -1px)',
+                  boxShadow: '4px 4px 0px 0px #384355',
+                }
+              }}
             >
               Add New User
             </Button>
@@ -506,58 +570,71 @@ const UsersPage = () => {
 
           {/* Filter summary */}
           {(searchTerm || roleFilter !== 'all' || genderFilter !== 'all' || statusFilter !== 'all') && (
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center', pt: 1 }}>
-              <Typography variant="caption" color="text.secondary">
+            <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', alignItems: 'center', pt: 1 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                 Active filters:
               </Typography>
               {searchTerm && (
-                <Chip label={`Search: ${searchTerm}`} size="small" onDelete={() => setSearchTerm('')} />
+                <Chip label={`Search: ${searchTerm}`} size="small" onDelete={() => setSearchTerm('')} sx={{ border: '1.5px solid #384355', fontWeight: 600 }} />
               )}
               {roleFilter !== 'all' && (
-                <Chip label={`Role: ${labelize(roleFilter)}`} size="small" onDelete={() => setRoleFilter('all')} />
+                <Chip label={`Role: ${labelize(roleFilter)}`} size="small" onDelete={() => setRoleFilter('all')} sx={{ border: '1.5px solid #384355', fontWeight: 600 }} />
               )}
               {genderFilter !== 'all' && (
-                <Chip label={`Gender: ${labelize(genderFilter)}`} size="small" onDelete={() => setGenderFilter('all')} />
+                <Chip label={`Gender: ${labelize(genderFilter)}`} size="small" onDelete={() => setGenderFilter('all')} sx={{ border: '1.5px solid #384355', fontWeight: 600 }} />
               )}
               {statusFilter !== 'all' && (
-                <Chip label={`Status: ${labelize(statusFilter)}`} size="small" onDelete={() => setStatusFilter('all')} />
+                <Chip label={`Status: ${labelize(statusFilter)}`} size="small" onDelete={() => setStatusFilter('all')} sx={{ border: '1.5px solid #384355', fontWeight: 600 }} />
               )}
             </Box>
           )}
         </Stack>
       </Paper>
 
-
-
       {/* Users Table Section */}
-      <Paper elevation={3} sx={{ p: { xs: 1.5, sm: 2 }, minWidth: 0, overflow: 'hidden' }}>
-        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2, px: 1 }}>
+      <Paper elevation={3} sx={{ p: 3, minWidth: 0, overflow: 'hidden', bgcolor: '#fDFDFD' }}>
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 800, fontFamily: "'Outfit', sans-serif", mb: 1, px: 1, color: '#384355' }}>
           User Table
         </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block', px: 1 }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary', mb: 3, display: 'block', px: 1, fontWeight: 500 }}>
           Showing {filteredUsers.length} of {users.length} total users
         </Typography>
         
         {filteredUsers.length ? (
-          <Box sx={{ height: { xs: 400, sm: 520 }, width: '100%', minWidth: 0 }}>
+          <Box sx={{ height: 500, width: '100%', minWidth: 0, border: '2px solid #384355', borderRadius: '20px', overflow: 'hidden', bgcolor: '#FDFDFD' }}>
             <DataGrid
               rows={filteredUsers}
               columns={columns}
               disableRowSelectionOnClick
               pageSizeOptions={[5, 10, 25]}
               initialState={{
-                pagination: { paginationModel: { pageSize: 5, page: 0 } },
+                pagination: { paginationModel: { pageSize: 10, page: 0 } },
               }}
               sx={{
-                minWidth: 0,
-                '& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader': {
-                  outline: 'none',
+                border: 'none',
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                '& .MuiDataGrid-cell': {
+                  borderBottom: '1px solid rgba(56, 67, 85, 0.1)',
+                  color: '#384355',
+                },
+                '& .MuiDataGrid-columnHeaders': {
+                  borderBottom: '2.5px solid #384355',
+                  backgroundColor: 'rgba(56, 67, 85, 0.04)',
+                  color: '#384355',
+                  fontWeight: 700,
+                },
+                '& .MuiDataGrid-columnHeaderTitle': {
+                  fontWeight: 700,
+                },
+                '& .MuiDataGrid-footerContainer': {
+                  borderTop: '2.5px solid #384355',
+                  backgroundColor: 'rgba(56, 67, 85, 0.02)',
                 },
               }}
             />
           </Box>
         ) : (
-          <Alert severity="info" sx={{ m: 2 }}>
+          <Alert severity="info" sx={{ border: '2px solid #384355', borderRadius: '12px', bgcolor: '#8ED9F4' }}>
             No users found matching your criteria. Try adjusting your search or filters.
           </Alert>
         )}
@@ -572,11 +649,11 @@ const UsersPage = () => {
         maxWidth="md"
       >
         <Box component="form" onSubmit={handleSubmit}>
-          <DialogTitle sx={{ fontWeight: 'bold' }}>
-            {modal.id ? 'Edit User' : 'Add New User'}
+          <DialogTitle sx={{ fontWeight: 800, fontFamily: "'Outfit', sans-serif", color: '#384355' }}>
+            {modal.id ? 'Edit User Details' : 'Add New System User'}
           </DialogTitle>
           <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
-            <Stack spacing={2} sx={{ pt: 1 }}>
+            <Stack spacing={2.5} sx={{ pt: 1.5 }}>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <TextField {...fieldProps('firstName', 'First Name')} />
                 <TextField {...fieldProps('lastName', 'Last Name')} />
@@ -643,21 +720,65 @@ const UsersPage = () => {
                     name="isActive"
                     checked={form.isActive}
                     onChange={handleChange}
+                    sx={{
+                      '& .MuiSwitch-switchBase.Mui-checked': {
+                        color: '#7FCC7E',
+                      },
+                      '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                        backgroundColor: '#7FCC7E',
+                      },
+                    }}
                   />
                 }
                 label={form.isActive ? 'User status: Active' : 'User status: Inactive'}
+                sx={{
+                  '& .MuiFormControlLabel-label': {
+                    fontWeight: 700,
+                    color: '#384355',
+                    fontSize: '13px',
+                  }
+                }}
               />
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2 }}>
+          <DialogActions sx={{ px: 3, py: 2.5 }}>
             {modal.id && (
-              <Button color="error" onClick={handleDelete} sx={{ mr: 'auto' }}>
+              <Button 
+                color="error" 
+                variant="outlined"
+                onClick={handleDelete} 
+                sx={{ 
+                  mr: 'auto',
+                  border: '2px solid currentColor',
+                  fontWeight: 700,
+                  '&:hover': {
+                    border: '2px solid currentColor',
+                    bgcolor: 'rgba(211, 47, 47, 0.04)',
+                  }
+                }}
+              >
                 Delete User
               </Button>
             )}
-            <Button onClick={closeModal}>Cancel</Button>
-            <Button type="submit" variant="contained">
-              {modal.id ? 'Update User' : 'Save User'}
+            <Button onClick={closeModal} sx={{ color: '#384355', fontWeight: 700 }}>Cancel</Button>
+            <Button 
+              type="submit" 
+              variant="contained"
+              color="secondary"
+              sx={{
+                border: '2px solid #384355',
+                boxShadow: '2px 2px 0px 0px #384355',
+                fontWeight: 700,
+                color: '#384355',
+                px: 3,
+                '&:hover': {
+                  bgcolor: '#FCF886',
+                  transform: 'translate(-1px, -1px)',
+                  boxShadow: '3px 3px 0px 0px #384355',
+                }
+              }}
+            >
+              {modal.id ? 'Update' : 'Save User'}
             </Button>
           </DialogActions>
         </Box>

@@ -113,14 +113,22 @@ const Drawer = styled(MuiDrawer, {
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
-  fontFamily: "'Poppins', sans-serif",
+  fontFamily: "'Plus Jakarta Sans', sans-serif",
   ...(open && {
     ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...openedMixin(theme),
+      borderRight: "2px solid #384355",
+      backgroundColor: "#fDFDFD",
+    },
   }),
   ...(!open && {
     ...closedMixin(theme),
-    "& .MuiDrawer-paper": closedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...closedMixin(theme),
+      borderRight: "2px solid #384355",
+      backgroundColor: "#fDFDFD",
+    },
   }),
 }));
 
@@ -138,6 +146,7 @@ const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: "9999px",
   backgroundColor: alpha("#384355", 0.08),
+  border: "2px solid #384355",
   "&:hover": {
     backgroundColor: alpha("#384355", 0.13),
   },
@@ -152,7 +161,7 @@ const Search = styled("div")(({ theme }) => ({
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "#384355",
-  fontFamily: "'Poppins', sans-serif",
+  fontFamily: "'Plus Jakarta Sans', sans-serif",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
@@ -193,7 +202,7 @@ const DashLayout = () => {
 
   return (
     <>
-      <Box sx={{ display: "flex", fontFamily: "'Poppins', sans-serif" }}>
+      <Box sx={{ display: "flex", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
         <CssBaseline />
         {/* Navbar */}
         <AppBar position="fixed" open={open}>
@@ -227,9 +236,9 @@ const DashLayout = () => {
                   component="div"
                   sx={{ 
                     color: "#384355",
-                    fontWeight: 600,
+                    fontWeight: 800,
                     letterSpacing: "0.1em",
-                    fontFamily: "'Poppins', sans-serif",
+                    fontFamily: "'Outfit', sans-serif",
                     display: { xs: "none", sm: "block" }
                   }}
                 >
@@ -257,15 +266,22 @@ const DashLayout = () => {
                   border: "2px solid #384355",
                   px: 3,
                   py: 0.5,
-                  fontSize: "11px",
-                  fontWeight: 600,
+                  fontSize: "10px",
+                  fontWeight: 800,
                   textTransform: "uppercase",
-                  letterSpacing: "0.24em",
+                  letterSpacing: "0.2em",
                   color: "#384355",
-                  fontFamily: "'Poppins', sans-serif",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  boxShadow: "2px 2px 0px 0px #384355",
+                  transition: "all 0.2s ease",
                   '&:hover': {
                     backgroundColor: "#FCF886",
-                    border: "2px solid #FCF886",
+                    boxShadow: "3px 3px 0px 0px #384355",
+                    transform: "translate(-1px, -1px)",
+                  },
+                  '&:active': {
+                    transform: "translate(1px, 1px)",
+                    boxShadow: "1px 1px 0px 0px #384355",
                   }
                 }}
               >
@@ -277,7 +293,7 @@ const DashLayout = () => {
 
         {/* Drawer */}
         <Drawer variant="permanent" open={open}>
-          <DrawerHeader>
+          <DrawerHeader sx={{ borderBottom: "2px solid #384355" }}>
             <IconButton onClick={handleDrawerClose}>
               {theme.direction === "rtl" ? (
                 <ChevronRightIcon />
@@ -286,7 +302,7 @@ const DashLayout = () => {
               )}
             </IconButton>
           </DrawerHeader>
-          <Divider />
+          <Divider sx={{ borderColor: "#384355" }} />
 
           <List>
             {dashboardNavItems
@@ -302,9 +318,9 @@ const DashLayout = () => {
                       px: 2.5,
                       justifyContent: open ? "initial" : "center",
                       '&.Mui-selected': {
-                        backgroundColor: alpha("#FCF886", 0.3),
+                        backgroundColor: alpha("#FCF886", 0.5),
                         '&:hover': {
-                          backgroundColor: alpha("#FCF886", 0.4),
+                          backgroundColor: alpha("#FCF886", 0.6),
                         }
                       }
                     }}
@@ -324,8 +340,9 @@ const DashLayout = () => {
                       sx={{ 
                         opacity: open ? 1 : 0,
                         '& .MuiListItemText-primary': {
-                          fontWeight: location.pathname === to ? 600 : 400,
-                          fontFamily: "'Poppins', sans-serif",
+                          fontWeight: location.pathname === to ? 700 : 500,
+                          fontFamily: "'Plus Jakarta Sans', sans-serif",
+                          color: "#384355",
                         }
                       }}
                     />
@@ -336,7 +353,7 @@ const DashLayout = () => {
         </Drawer>
         
         {/* Main Content */}
-        <Box component="main" sx={{ flexGrow: 1, p: 3, bgcolor: "#f5f5f5", minHeight: "100vh" }}>
+        <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, bgcolor: "#F9F9F6", minHeight: "100vh" }}>
           <DrawerHeader />
           <Outlet />
         </Box>

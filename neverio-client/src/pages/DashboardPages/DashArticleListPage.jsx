@@ -200,9 +200,17 @@ const DashArticleListPage = () => {
               color: "#384355",
               border: "2px solid #384355",
               backgroundColor: "#FCF886",
+              boxShadow: "1px 1px 0px 0px #384355",
+              transition: "all 0.1s ease",
               "&:hover": {
-                backgroundColor: "#fDFDFD",
+                backgroundColor: "#FCF886",
+                boxShadow: "2px 2px 0px 0px #384355",
+                transform: "translate(-1px, -1px)",
               },
+              "&:active": {
+                transform: "translate(0px, 0px)",
+                boxShadow: "0px 0px 0px 0px #384355",
+              }
             }}
             size="small"
           >
@@ -214,10 +222,18 @@ const DashArticleListPage = () => {
               color: "#fDFDFD",
               border: "2px solid #384355",
               backgroundColor: "#384355",
+              boxShadow: "1px 1px 0px 0px #384355",
+              transition: "all 0.1s ease",
               "&:hover": {
-                backgroundColor: "#fDFDFD",
-                color: "#384355",
+                backgroundColor: "#384355",
+                color: "#fDFDFD",
+                boxShadow: "2px 2px 0px 0px #384355",
+                transform: "translate(-1px, -1px)",
               },
+              "&:active": {
+                transform: "translate(0px, 0px)",
+                boxShadow: "0px 0px 0px 0px #384355",
+              }
             }}
             size="small"
           >
@@ -229,15 +245,13 @@ const DashArticleListPage = () => {
   ];
 
   return (
-    <Box sx={{ width: "100%", minWidth: 0, fontFamily: "'Poppins', sans-serif" }}>
+    <Box sx={{ width: "100%", minWidth: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       {/* Header card with Neverio styling */}
       <Paper
-        elevation={0}
+        elevation={3}
         sx={{
           p: 3,
           mb: 3,
-          border: "2px solid #384355",
-          borderRadius: "24px",
           bgcolor: "#fDFDFD",
         }}
       >
@@ -247,7 +261,7 @@ const DashArticleListPage = () => {
           sx={{ justifyContent: "space-between", alignItems: { xs: "stretch", sm: "center" } }}
         >
           <Box>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "#384355" }}>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", fontFamily: "'Outfit', sans-serif", color: "#384355" }}>
               Articles
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -266,17 +280,23 @@ const DashArticleListPage = () => {
               color: "#384355",
               px: 4,
               py: 1.2,
-              fontSize: "11px",
-              fontWeight: 600,
+              fontSize: "10px",
+              fontWeight: 800,
               textTransform: "uppercase",
-              letterSpacing: "0.24em",
-              boxShadow: "none",
+              letterSpacing: "0.2em",
+              boxShadow: "2px 2px 0px 0px #384355",
               alignSelf: "flex-start",
+              transition: "all 0.2s ease",
               "&:hover": {
-                backgroundColor: "#fDFDFD",
+                backgroundColor: "#FCF886",
                 border: "2px solid #384355",
-                boxShadow: "none",
+                boxShadow: "4px 4px 0px 0px #384355",
+                transform: "translate(-2px, -2px)",
               },
+              "&:active": {
+                boxShadow: "1px 1px 0px 0px #384355",
+                transform: "translate(1px, 1px)",
+              }
             }}
           >
             Add Article
@@ -286,16 +306,14 @@ const DashArticleListPage = () => {
 
       {/* Main Grid table with Neverio branding */}
       <Paper
-        elevation={0}
+        elevation={3}
         sx={{
           p: 2,
-          border: "2px solid #384355",
-          borderRadius: "24px",
           bgcolor: "#fDFDFD",
           overflow: "hidden",
         }}
       >
-        <Box sx={{ height: 500, width: "100%", bgcolor: "#fDFDFD" }}>
+        <Box sx={{ height: 500, width: "100%", bgcolor: "#fDFDFD", border: "2px solid #384355", borderRadius: "20px", overflow: "hidden" }}>
           <DataGrid
             rows={articles}
             columns={columns}
@@ -308,13 +326,23 @@ const DashArticleListPage = () => {
             disableRowSelectionOnClick
             sx={{
               border: "none",
-              fontFamily: "'Poppins', sans-serif",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
               "& .MuiDataGrid-cell": {
                 borderBottom: "1px solid rgba(56, 67, 85, 0.1)",
+                color: "#384355",
               },
               "& .MuiDataGrid-columnHeaders": {
-                borderBottom: "2px solid #384355",
-                backgroundColor: "rgba(56, 67, 85, 0.03)",
+                borderBottom: "2.5px solid #384355",
+                backgroundColor: "rgba(56, 67, 85, 0.04)",
+                color: "#384355",
+                fontWeight: 700,
+              },
+              "& .MuiDataGrid-columnHeaderTitle": {
+                fontWeight: 700,
+              },
+              "& .MuiDataGrid-footerContainer": {
+                borderTop: "2.5px solid #384355",
+                backgroundColor: "rgba(56, 67, 85, 0.02)",
               },
               "& .MuiDataGrid-cell:focus, & .MuiDataGrid-columnHeader:focus": {
                 outline: "none",
@@ -327,10 +355,10 @@ const DashArticleListPage = () => {
       {/* Modal Dialog */}
       <Modal open={open} onClose={handleClose}>
         <Box sx={modalStyle}>
-          <Typography variant="h5" mb={3} fontWeight="bold" sx={{ color: "#384355" }}>
+          <Typography variant="h5" mb={3} fontWeight="bold" sx={{ color: "#384355", fontFamily: "'Outfit', sans-serif" }}>
             {isEditing ? "Edit Article" : "Publish New Article"}
           </Typography>
-          <Divider sx={{ mb: 3, borderColor: "#384355" }} />
+          <Divider sx={{ mb: 3, borderColor: "#384355", borderWidth: '1px' }} />
 
           <Stack spacing={2.5}>
             <TextField
@@ -376,13 +404,14 @@ const DashArticleListPage = () => {
                 sx={{
                   borderRadius: "9999px",
                   border: "2px solid #384355",
-                  px: 3,
-                  py: 1,
-                  fontSize: "11px",
-                  fontWeight: 600,
+                  px: 4,
+                  py: 1.2,
+                  fontSize: "10px",
+                  fontWeight: 800,
                   textTransform: "uppercase",
                   letterSpacing: "0.15em",
                   color: "#384355",
+                  transition: "all 0.2s ease",
                   "&:hover": {
                     backgroundColor: "#384355",
                     color: "#fDFDFD",
@@ -401,20 +430,27 @@ const DashArticleListPage = () => {
                   backgroundColor: "#FCF886",
                   color: "#384355",
                   px: 4,
-                  py: 1,
-                  fontSize: "11px",
-                  fontWeight: 600,
+                  py: 1.2,
+                  fontSize: "10px",
+                  fontWeight: 800,
                   textTransform: "uppercase",
                   letterSpacing: "0.15em",
-                  boxShadow: "none",
+                  boxShadow: "2px 2px 0px 0px #384355",
+                  transition: "all 0.2s ease",
                   "&:hover": {
-                    backgroundColor: "#384355",
-                    color: "#fDFDFD",
-                    boxShadow: "none",
+                    backgroundColor: "#FCF886",
+                    color: "#384355",
+                    boxShadow: "4px 4px 0px 0px #384355",
+                    transform: "translate(-2px, -2px)",
+                  },
+                  "&:active": {
+                    transform: "translate(1px, 1px)",
+                    boxShadow: "1px 1px 0px 0px #384355",
                   },
                   "&:disabled": {
                     border: "2px solid rgba(56, 67, 85, 0.2)",
                     color: "rgba(56, 67, 85, 0.4)",
+                    boxShadow: "none",
                   },
                 }}
               >
